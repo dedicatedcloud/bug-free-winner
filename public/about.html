@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>About – __REPO_TITLE__</title>
+                                                  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#005eb8">
+  <link rel="preload" href="assets/style.css" as="style">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="header" role="banner">
+    <div class="wrap">
+      <a href="index.html" class="brand" aria-label="Home"><strong>__REPO_TITLE__</strong></a>
+      <nav class="nav" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main" id="maincontent">
+    <h1>About this site</h1>
+    <p>This page demonstrates a second HTML document being served from the same Worker project.</p>
+
+    <h2>What’s included</h2>
+    <ul>
+      <li>Two HTML files (<code>index.html</code>, <code>about.html</code>)</li>
+      <li>A single stylesheet (<code>/assets/style.css</code>)</li>
+      <li>A small JavaScript file (<code>/assets/app.js</code>)</li>
+      <li>A Worker that adds security headers and exposes <code>/api/health</code></li>
+    </ul>
+
+    <p><a class="button" href="index.html">Back to Home</a></p>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <p>&copy; <span id="y"></span>__REPO_TITLE__. All rights reserved.</p>
+    <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  </footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

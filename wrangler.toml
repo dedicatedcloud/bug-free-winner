@@ -1,0 +1,14 @@
+name = "__REPO_NAME__"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+
+# Serve static assets from ./public at the edge with caching.
+assets = { directory = "public" }
+
+# Set custom routes (uncomment and adjust if deploying to a custom zone)
+# routes = [
+#   { pattern = "example.com/*", zone_name = "example.com" }
+# ]
+
+[observability]
+enabled = true

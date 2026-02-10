@@ -1,0 +1,96 @@
+name: Auto-rename project to repo name
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    if: ${{ !github.event.repository.is_template }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rewrite placeholders to repo name/title (safe)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+
+          # Pretty title:
+          # - convert _ and - to spaces
+          # - collapse spaces
+          # - Title Case words
+          REPO_TITLE="$(echo "$REPO_NAME" \
+            | tr '_-' '  ' \
+            | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' \
+            | awk '{
+                for (i=1; i<=NF; i++) {
+                  $i = toupper(substr($i,1,1)) tolower(substr($i,2));
+                }
+                print
+              }')"
+
+          echo "Repo name : $REPO_NAME"
+          echo "Repo title: $REPO_TITLE"
+
+          # Escape for perl replacement (delimiter is #)
+          esc_for_perl_repl() {
+            local s="$1"
+            s="${s//\\/\\\\}"   # backslash
+            s="${s//#/\\#}"     # delimiter
+            s="${s//\$/\\$}"    # perl replacement var
+            s="${s//@/\\@}"     # perl array sigil
+            echo "$s"
+          }
+
+          REPO_NAME_ESC="$(esc_for_perl_repl "$REPO_NAME")"
+          REPO_TITLE_ESC="$(esc_for_perl_repl "$REPO_TITLE")"
+
+          CHANGED=0
+
+          replace_placeholders_in_file() {
+            local file="$1"
+            [ -f "$file" ] || return 0
+            if grep -q '__REPO_NAME__\|__REPO_TITLE__' "$file"; then
+              perl -pi -e "s#__REPO_NAME__#${REPO_NAME_ESC}#g; s#__REPO_TITLE__#${REPO_TITLE_ESC}#g" "$file"
+              CHANGED=1
+              echo "Updated $file"
+            fi
+          }
+
+          # wrangler.toml: set name (only if placeholder exists)
+          if [ -f wrangler.toml ] && grep -q 'name = "__REPO_NAME__"' wrangler.toml; then
+            perl -0777 -i -pe "s#^name\\s*=\\s*\"__REPO_NAME__\"#name = \"${REPO_NAME_ESC}\"#m" wrangler.toml
+            CHANGED=1
+            echo "Updated wrangler.toml"
+          fi
+
+          # package.json + README.md placeholders
+          replace_placeholders_in_file package.json
+          replace_placeholders_in_file README.md
+
+          # public/**/*.html placeholders
+          if [ -d public ]; then
+            while IFS= read -r -d '' f; do
+              replace_placeholders_in_file "$f"
+            done < <(find public -type f -name "*.html" -print0)
+          fi
+
+          if [ "$CHANGED" -eq 0 ]; then
+            echo "No changes required."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add wrangler.toml package.json README.md public || true
+          git commit -m "chore: set project identity to ${REPO_NAME}" || exit 0
+          git push

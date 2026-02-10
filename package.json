@@ -1,0 +1,13 @@
+{
+  "name": "__REPO_NAME__",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static website (2 HTML pages + CSS + JS) served by Cloudflare Workers with the assets feature.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.5"
+  }
+}
