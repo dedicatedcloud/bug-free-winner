@@ -1,4 +1,4 @@
-name = "__REPO_NAME__"
+name = "bug-free-winner"
 main = "src/worker.js"
 compatibility_date = "2025-10-01"
 

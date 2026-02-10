@@ -1,5 +1,5 @@
 {
-  "name": "__REPO_NAME__",
+  "name": "bug-free-winner",
   "version": "1.0.0",
   "private": true,
   "description": "Static website (2 HTML pages + CSS + JS) served by Cloudflare Workers with the assets feature.",

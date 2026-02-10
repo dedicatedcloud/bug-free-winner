@@ -1,6 +1,6 @@
-# __REPO_TITLE__
+# Bug Free Winner
 
-Worker/app name: `__REPO_NAME__`
+Worker/app name: `bug-free-winner`
 
 
 Static website (2 HTML pages + CSS + JS) served by Cloudflare Workers with the assets feature.
